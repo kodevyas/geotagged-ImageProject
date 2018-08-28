@@ -8,9 +8,6 @@ import math
 import config as conf
 
 
-
-
-
 image_dict = {}
 d_distance = conf.distance_from_drone
 p_distance = conf.distance_from_POI
@@ -63,7 +60,9 @@ def some_funtion(data_file):
             file.write(string)
         file.close
 
-
+"""
+Generates processable data from the video files provided as input in reqired format
+"""
 def get_video_data(video):
     with open(video, 'r') as v:
         video_data = []
@@ -92,7 +91,9 @@ def get_video_data(video):
 
 
 
-
+"""
+Generates processable data from the asset files provided as input in reqired format
+"""
 def get_assets_data(asset):
     with open(asset, 'r') as a:
         count = 0
@@ -111,10 +112,6 @@ def get_assets_data(asset):
             temp_asset_data = [asset_name, lat_lon]
             asset_data.append(temp_asset_data)
         return asset_data
-
-
-
-
 
 
 
@@ -158,6 +155,11 @@ def gps_to_lat_lon(gps_loc):
     return lat_lon
 
 
+
+"""
+Generates filename for the output files depending upon the configurations in
+the config.py
+"""
 def generate_file_name(input_file, output_path='',filename='output', create_multiple_output=False):
     if create_multiple_output:
         file_name = output_path + input_file + filename + str(random.randint(10,99)) + '.csv'
@@ -167,13 +169,24 @@ def generate_file_name(input_file, output_path='',filename='output', create_mult
 
 
 
+"""
+Takes latitude and longitude data of the drone or asset and distance from config
+and generates all the images which are under that range
+"""
 
 def get_images_under_distance(lat_lon, distance):
     image_list = []
     for image in image_dict:
         reversed_image_lat_lon = tuple(image_dict[image])
         image_lat_lon = reversed(reversed_image_lat_lon)
-        calculated_distance = geodesic(lat_lon,image_lat_lon).meters
+        if unit == 'meters':
+            calculated_distance = geodesic(lat_lon,image_lat_lon).meters
+        elif unit = 'kilometers':
+            calculated_distance = geodesic(lat_lon,image_lat_lon).kilometers
+        elif unit = 'miles':
+            calculated_distance = geodesic(lat_lon,image_lat_lon).miles
+        else:
+            calculated_distance = geodesic(lat_lon,image_lat_lon).meters
         if calculated_distance <= distance:
             image_list.append(image)
 

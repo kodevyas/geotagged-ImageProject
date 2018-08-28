@@ -23,6 +23,14 @@ selective_input_file = 'False'
 #format as asset files and files in SRT format as video files
 input_file_list = None
 
+
+# sets the unit of distances used in the program. if set than all the input
+#distances should also be in the same unit. If not set then by defauld it will
+#use meters as the distance distance_unit
+#options for unit are : meters, kilometers, and miles
+distance_unit = 'meters'
+
+
 #distance_from_drone stores the distance under which you want all your images
 #to be from the position of drone
 distance_from_drone = 35             #distance should be in meters
