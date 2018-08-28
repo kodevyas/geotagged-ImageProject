@@ -45,11 +45,11 @@ def some_funtion(data_file):
     for location in all_location:
         position = str(location[0])
         lat_lon = tuple(location[1])
-        image_list = get_images_under_distance(lat_lon, d_distance)
+        image_list = get_images_under_distance(lat_lon, distance)
         image_on_position[position] = image_list
 
     #codeblock to convert image_on_position dict to csv file
-    input_file = input_filename.split()[-1]
+    input_file = input_filename.split('/')[-1]
     filename = generate_file_name(input_file, conf.output_file_path, conf.output_file_name, conf.create_multiple_output)
     with open(filename, 'w+') as file:
         for position in image_on_position:
@@ -164,7 +164,7 @@ def generate_file_name(input_file, output_path='',filename='output', create_mult
     if create_multiple_output:
         file_name = output_path + input_file + filename + str(random.randint(10,99)) + '.csv'
     else:
-        file_name = output_path + filename + '.csv'
+        file_name = output_path + input_file +'_'+ filename + '.csv'
     return file_name
 
 

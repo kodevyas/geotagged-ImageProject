@@ -33,12 +33,12 @@ distance_unit = 'meters'
 
 #distance_from_drone stores the distance under which you want all your images
 #to be from the position of drone
-distance_from_drone = 35             #distance should be in meters
+distance_from_drone = 35
 
 
 #distance_from_POI stores the distance under which you want all your images
 #to be from the position of POI
-distance_from_POI = 50
+distance_from_POI = 10
 
 #output_file_path stores the path for the output file. If not specified
 #output files will be created in the same directory where main.py is.
