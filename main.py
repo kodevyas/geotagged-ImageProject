@@ -175,15 +175,16 @@ and generates all the images which are under that range
 """
 
 def get_images_under_distance(lat_lon, distance):
+    unit = conf.distance_unit
     image_list = []
     for image in image_dict:
         reversed_image_lat_lon = tuple(image_dict[image])
         image_lat_lon = reversed(reversed_image_lat_lon)
         if unit == 'meters':
             calculated_distance = geodesic(lat_lon,image_lat_lon).meters
-        elif unit = 'kilometers':
+        elif unit == 'kilometers':
             calculated_distance = geodesic(lat_lon,image_lat_lon).kilometers
-        elif unit = 'miles':
+        elif unit == 'miles':
             calculated_distance = geodesic(lat_lon,image_lat_lon).miles
         else:
             calculated_distance = geodesic(lat_lon,image_lat_lon).meters
