@@ -5,30 +5,63 @@ from pathlib import Path
 import piexif
 from geopy.distance import geodesic
 import math
-import config as c
+import config as conf
+
+
+
+
 
 image_dict = {}
-d_distance = c.distance_from_drone
-p_distance = c.distance_from_POI
+d_distance = conf.distance_from_drone
+p_distance = conf.distance_from_POI
 
-image_location = Path(c.images_path)
-video_location = Path(c.videos_path)
-
-
-def create_image_list_from_video():
-    for video in video_location.iterdir():
-        all_location = get_video_data(video)
-        image_on_position = {}
-        for location in all_location:
-            position = str(location[0])
-            lat_lon = tuple(location[1])
-            image_list = get_images_under_distance(lat_lon, d_distance)
-            image_on_position[position] = image_list
-        #code to convert image_on_position dict to csv file
-        print(image_on_position)
+image_location = Path(conf.images_path)
+input_file_location = Path(conf.input_file_path)
 
 
 
+
+def create_image_list_from_input_data():
+    if conf.selective_input_file == True:                    #Reads input files from input_file_list in config file
+        input_file_list = conf.input_file_list.split(',')
+        for input_file in input_file_list:
+            some_funtion(input_file)
+    else:
+        for input_file in input_file_location.iterdir():    #Reads input files from the input_file_path
+            some_funtion(input_file)
+
+
+def some_funtion(data_file):
+    input_filename, file_type = str(data_file).split('.')
+    if (file_type == 'SRT'):
+        distance = d_distance
+        all_location = get_video_data(data_file)
+    elif(file_type == 'csv'):
+        distance = p_distance
+        all_location = get_assets_data(data_file)
+    else:
+        print('File', data_file,'is not of proper type!')
+
+
+    #codeblock to generate a dictionary or positions and repective image list
+    image_on_position = {}
+    for location in all_location:
+        position = str(location[0])
+        lat_lon = tuple(location[1])
+        image_list = get_images_under_distance(lat_lon, d_distance)
+        image_on_position[position] = image_list
+
+    #codeblock to convert image_on_position dict to csv file
+    input_file = input_filename.split()[-1]
+    filename = generate_file_name(input_file, conf.output_file_path, conf.output_file_name, conf.create_multiple_output)
+    with open(filename, 'w+') as file:
+        for position in image_on_position:
+            string = str(position)
+            for image in image_on_position[position]:
+                string = string + ',' + image
+            string = string + '\n'
+            file.write(string)
+        file.close
 
 
 def get_video_data(video):
@@ -59,6 +92,33 @@ def get_video_data(video):
 
 
 
+
+def get_assets_data(asset):
+    with open(asset, 'r') as a:
+        count = 0
+        asset_data = []
+        for line in a:
+            data = []
+            if count:
+                data = line.split(',')
+            else:
+                count += 1
+                continue
+            asset_name = data[0]
+            lat_lon = []
+            lat_lon.append(float(data[1]))
+            lat_lon.append(float(data[2]))
+            temp_asset_data = [asset_name, lat_lon]
+            asset_data.append(temp_asset_data)
+        return asset_data
+
+
+
+
+
+
+
+
 """create_image_dict populates the above defined image_dict with the
 data taken from images in /images as image_name as key at latitude
 longitude value as key values"""
@@ -81,6 +141,8 @@ def create_image_dict():
 
 
 
+
+
 """gps_to_lat_lon generates latitude and longitude from the gps exif values.
 Values from gps exif values are in degree, minutes, second format. They are
 converted into decimal degree format and the returned as list"""
@@ -96,24 +158,32 @@ def gps_to_lat_lon(gps_loc):
     return lat_lon
 
 
+def generate_file_name(input_file, output_path='',filename='output', create_multiple_output=False):
+    if create_multiple_output:
+        file_name = output_path + input_file + filename + str(random.randint(10,99)) + '.csv'
+    else:
+        file_name = output_path + filename + '.csv'
+    return file_name
+
+
+
+
 def get_images_under_distance(lat_lon, distance):
     image_list = []
     for image in image_dict:
         reversed_image_lat_lon = tuple(image_dict[image])
         image_lat_lon = reversed(reversed_image_lat_lon)
         calculated_distance = geodesic(lat_lon,image_lat_lon).meters
-        print(calculated_distance)
         if calculated_distance <= distance:
             image_list.append(image)
 
     image_list.sort()
-
     return image_list
+
+
+
+
 
 if __name__ == "__main__":
     create_image_dict()
-    create_image_list_from_video()
-
-#create_image_dict()
-#print(image_dict)
-create_image_list_from_video()
+    create_image_list_from_input_data()
