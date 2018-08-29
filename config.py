@@ -12,7 +12,7 @@ images_path = 'images'
 #selective_input_file is set if you want to provide the input file names
 #directly to the program. If it is set then program will read files from
 #input_file_list down below
-selective_input_file = 'False'
+selective_input_file = True
 
 
 #If selective_input_file is set then input_file_list should have the names
@@ -21,24 +21,24 @@ selective_input_file = 'False'
 # eg: 'filename1.csv,filename2.SRT,.....'
 #Note that there should be no space and program assumes all files in csv
 #format as asset files and files in SRT format as video files
-input_file_list = None
+input_file_list = 'assets.csv'
 
 
 # sets the unit of distances used in the program. if set than all the input
 #distances should also be in the same unit. If not set then by defauld it will
 #use meters as the distance distance_unit
 #options for unit are : meters, kilometers, and miles
-distance_unit = 'meters'
+distance_unit = 'kilometers'
 
 
 #distance_from_drone stores the distance under which you want all your images
 #to be from the position of drone
-distance_from_drone = 35
+distance_from_drone = 0.035
 
 
 #distance_from_POI stores the distance under which you want all your images
 #to be from the position of POI
-distance_from_POI = 10
+distance_from_POI = 0.050
 
 #output_file_path stores the path for the output file. If not specified
 #output files will be created in the same directory where main.py is.
