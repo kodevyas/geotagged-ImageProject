@@ -39,7 +39,7 @@ def get_video_data(video):
                     continue
                 else:
                     time_data.append(line.strip())
-        video_data.append(some_ops(time_data))
+        video_data.append(time_data)
 
         count = 0
         for data in video_data:
