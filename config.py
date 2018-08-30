@@ -54,4 +54,6 @@ create_multiple_output = False
 # output file will be created with some random values concatinated in the end.
 output_file_name = 'output'
 
+#IF generate_kml is set to true it will generate the kml file for the SRT
+#video file in the output_file_path location.
 generate_kml = True

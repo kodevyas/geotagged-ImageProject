@@ -92,7 +92,6 @@ def get_video_data(video):
                     time_data.append(line.strip())
         video_data.append(time_data)
 
-        count = 0
         for data in video_data:
             data[0] = int(data[0])
             data[1] = data[1].split(',')
@@ -100,7 +99,6 @@ def get_video_data(video):
             data[1][0] = float(data[1][0])
             data[1][1] = float(data[1][1])
         return video_data
-
 
 
 """
@@ -176,17 +174,17 @@ def create_image_list_from_input_data():
         input_file_list = conf.input_file_list.split(',')
         for input_file in input_file_list:
             input_file = str(input_file_location) + '/' + input_file
-            some_funtion(input_file)
+            calculate_and_generate_output(input_file)
     else:
         for input_file in input_file_location.iterdir():    #Reads input files from the input_file_path
-            some_funtion(input_file)
+            calculate_and_generate_output(input_file)
 
 
 """ This function does all the heavy duty work. First it checks the file type
 then retrieves data from the file and processes it for calculations and then
 generates the output fileself.
 """
-def some_funtion(data_file):
+def calculate_and_generate_output(data_file):
     input_filename, file_type = str(data_file).split('.')
     if (file_type == 'SRT'):
         distance = d_distance
@@ -198,7 +196,6 @@ def some_funtion(data_file):
         all_location = get_assets_data(data_file)
     else:
         print('File', data_file,'is not of proper type!')
-
 
     #codeblock to generate a dictionary or positions and repective image list
     image_on_position = {}
@@ -244,8 +241,7 @@ longitude value as key values"""
 def create_image_dict():
     for image in  image_location.iterdir():
         image = str(image)
-        path_list = str(image).split('/')
-        image_name = path_list[-1]
+        image_name = image.split('/')[-1]
 
         exif_dict = piexif.load(image)
 
