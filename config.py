@@ -12,7 +12,7 @@ images_path = 'images'
 #selective_input_file is set if you want to provide the input file names
 #directly to the program. If it is set then program will read files from
 #input_file_list down below
-selective_input_file = True
+selective_input_file = False
 
 
 #If selective_input_file is set then input_file_list should have the names
@@ -53,3 +53,5 @@ create_multiple_output = False
 #directory in output_file_path if create_multiple_output is set to False else
 # output file will be created with some random values concatinated in the end.
 output_file_name = 'output'
+
+generate_kml = True

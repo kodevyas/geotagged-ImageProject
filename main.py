@@ -17,7 +17,58 @@ image_location = Path(conf.images_path)
 input_file_location = Path(conf.input_file_path)
 
 
+""" This function is called whenever generate_kml is set to 'True' and
+a SRT file is given as input. It generates a kml file for the video input files
+"""
+def generate_kml(file):
+    with open(file, 'r') as file:
+        file_data = []
+        count = 0
+        for line in file:
+            count += 1
+            if count == 3:
+                file_data.append(line)
+            elif (count-3) % 4 == 0:
+                file_data.append(line)
+        create_kml(file_data, file)
 
+
+"""This function creates a kml file in the ouput directory and writes the
+kml code into it with the coordinates given from SRT fileself.
+"""
+def create_kml(data, file):
+    input_file = file.name.split('.')[0].split('/')[-1]
+    filename = generate_file_name(input_file, file_type = '.kml')
+    with open(filename, 'w+') as file:
+        file.writelines(["<?xml version='1.0' encoding='UTF-8'?>",
+                        "<kml xmlns='http://www.opengis.net/kml/2.2'>",
+                        "<Document>",
+                        "<name>Paths</name>",
+                        "<description></description>",
+                        "<Style id='yellowLineGreenPoly'>",
+                        "<LineStyle>",
+                        "<color>7f0000ff</color>",
+                        "<width>4</width>",
+                        "</LineStyle>",
+                        "<PolyStyle>",
+                        "<color>7f00ff00</color>",
+                        "</PolyStyle>",
+                        "</Style>",
+                        "<Placemark>",
+                        "<name>Absolute Extruded</name>",
+                        "<description>Transparent green wall with yellow outlines</description>",
+                        "<styleUrl>#yellowLineGreenPoly</styleUrl>",
+                        "<LineString>",
+                        "<extrude>1</extrude>",
+                        "<tessellate>1</tessellate>",
+                        "<coordinates>"])
+        for value in data:
+            file.write(value)
+        file.writelines(["</coordinates>",
+                        "</LineString>",
+                        "</Placemark>",
+                        "</Document>",
+                        "</kml>"])
 
 
 """
@@ -79,13 +130,13 @@ def get_assets_data(asset):
 Generates filename for the output files depending upon the configurations in
 the config.py
 """
-def generate_file_name(input_file):
+def generate_file_name(input_file, file_type):
     output_path = conf.output_file_path
     filename = conf.output_file_name
     if conf.create_multiple_output:
-        file_name = output_path + input_file + filename + str(uuid1()).split('-')[-1] + '.csv'
+        file_name = output_path + input_file + filename + str(uuid1()).split('-')[-1] + file_type
     else:
-        file_name = output_path + input_file +'_'+ filename + '.csv'
+        file_name = output_path + input_file +'_'+ filename + file_type
     return file_name
 
 
@@ -115,7 +166,10 @@ def get_images_under_distance(lat_lon, distance):
     return image_list
 
 
-
+"""This function searches for all the SRT and CSV files according the
+configurations set in config.py and then genetates all the list of images
+at a specified distanceself.
+"""
 def create_image_list_from_input_data():
     #Reads input files from input_file_list in config file
     if conf.selective_input_file == True:
@@ -128,11 +182,17 @@ def create_image_list_from_input_data():
             some_funtion(input_file)
 
 
+""" This function does all the heavy duty work. First it checks the file type
+then retrieves data from the file and processes it for calculations and then
+generates the output fileself.
+"""
 def some_funtion(data_file):
     input_filename, file_type = str(data_file).split('.')
     if (file_type == 'SRT'):
         distance = d_distance
         all_location = get_video_data(data_file)
+        if conf.generate_kml:
+            generate_kml(data_file)
     elif(file_type == 'csv'):
         distance = p_distance
         all_location = get_assets_data(data_file)
@@ -150,7 +210,7 @@ def some_funtion(data_file):
 
     #codeblock to convert image_on_position dict to csv file
     input_file = input_filename.split('/')[-1]
-    filename = generate_file_name(input_file)
+    filename = generate_file_name(input_file, file_type = '.csv')
 
     with open(filename, 'w+') as file:
         for position in image_on_position:
