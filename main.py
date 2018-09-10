@@ -9,6 +9,10 @@ from uuid import uuid1
 import config as conf
 
 
+import srt
+import simplekml
+
+
 image_dict = {}
 d_distance = conf.distance_from_drone
 p_distance = conf.distance_from_POI
@@ -39,66 +43,43 @@ kml code into it with the coordinates given from SRT fileself.
 def create_kml(data, file):
     input_file = file.name.split('.')[0].split('/')[-1]
     filename = generate_file_name(input_file, file_type = '.kml')
-    with open(filename, 'w+') as file:
-        file.writelines(["<?xml version='1.0' encoding='UTF-8'?>",
-                        "<kml xmlns='http://www.opengis.net/kml/2.2'>",
-                        "<Document>",
-                        "<name>Paths</name>",
-                        "<description></description>",
-                        "<Style id='yellowLineGreenPoly'>",
-                        "<LineStyle>",
-                        "<color>7f0000ff</color>",
-                        "<width>4</width>",
-                        "</LineStyle>",
-                        "<PolyStyle>",
-                        "<color>7f00ff00</color>",
-                        "</PolyStyle>",
-                        "</Style>",
-                        "<Placemark>",
-                        "<name>Absolute Extruded</name>",
-                        "<description>Transparent green wall with yellow outlines</description>",
-                        "<styleUrl>#yellowLineGreenPoly</styleUrl>",
-                        "<LineString>",
-                        "<extrude>1</extrude>",
-                        "<tessellate>1</tessellate>",
-                        "<coordinates>"])
-        for value in data:
-            file.write(value)
-        file.writelines(["</coordinates>",
-                        "</LineString>",
-                        "</Placemark>",
-                        "</Document>",
-                        "</kml>"])
+    coords = []
+    for value in data:
+        value = value.split(',')
+        coords.append((float(value[0]), float(value[1])))
+    kml = simplekml.Kml()
+    line = kml.newlinestring(name= 'Pathway', description='this is the discription', coords=coords)
+    line.style.linestyle.color = 'ff0000ff'
+    kml.save(filename)
+
 
 
 """
 Generates processable data from the video files provided as input in reqired format
 """
-def get_video_data(video):
-    with open(video, 'r') as v:
-        video_data = []
-        time_data = []
-        count = 0
-        for line in v:
-            count += 1
-            if (count % 4 == 0):
-                video_data.append(time_data)
-                time_data = []
-                continue
-            else:
-                if(count % 2 == 0):
-                    continue
-                else:
-                    time_data.append(line.strip())
-        video_data.append(time_data)
 
-        for data in video_data:
-            data[0] = int(data[0])
-            data[1] = data[1].split(',')
-            data[1].remove('0')
-            data[1][0] = float(data[1][0])
-            data[1][1] = float(data[1][1])
-        return video_data
+def get_video_data(video):
+    file = open(video, 'r')
+    content = file.read()
+    sub = list(srt.parse(content))
+    video_data = []
+    for item in sub:
+        time_data = []
+        seconds = item.start.total_seconds()
+        lat_lon = item.content
+        if seconds - int(seconds) == 0:
+            time_data.append(seconds)
+            time_data.append(lat_lon)
+            video_data.append(time_data)
+    for data in video_data:
+        data[0] = int(data[0])
+        data[1] = data[1].split(',')
+        data[1].remove('0')
+        data[1][0] = float(data[1][0])
+        data[1][1] = float(data[1][1])
+    return video_data
+
+
 
 
 """

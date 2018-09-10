@@ -8,6 +8,8 @@ The entire source code is in Python 3
 It uses two Python libraries that you might need to install first.
 - piexif
 - geopy
+- srt
+- simplekml
 
 You can install both the libraries through pip
   $ pip install <package_name>
