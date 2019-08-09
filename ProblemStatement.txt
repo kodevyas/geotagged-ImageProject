@@ -1,9 +1,4 @@
-From: Byomkesh Bakshi <bb@alaudidaeuavs.com>
-Subj: Hey, need a quick favour
-
 Hey,
-I know you're just joining the company and all, but I really need a quick favour.
-
 So we're showing a demo to the client. We have a video that we've shot over their
 site, as well as a set of aerial images. We would like to show them a POC level
 app where they can watch the video, and whenever they pause the video to inspect
